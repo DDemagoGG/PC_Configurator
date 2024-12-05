@@ -1,0 +1,51 @@
+<html><head><base href=".">
+    <meta charset="UTF-8">
+    <title>NadoPC - Create Order</title>
+
+    <link rel="stylesheet" type="text/css" href="/static/css/Order.css">
+
+    </head>
+    <body>
+    
+    <div class="header">
+        <div class="logo">
+            <svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20,25 L40,10 L60,25 L40,40 Z" fill="#3498DB"/>
+                <path d="M35,25 L55,10 L75,25 L55,40 Z" fill="#2C3E50"/>
+                <text x="85" y="35" fill="#2C3E50" font-size="24" font-weight="bold">NadoPC</text>
+            </svg>
+        </div>
+        <div class="user-info">
+            <button class="home-btn" onclick="window.location.href='http://localhost:8000/user/home'">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 10L10 3L17 10L17 17H13V12H7V17H3V10Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Home
+            </button>
+        </div>
+    </div>
+    
+    <div class="order-creation-container">
+        <select class="shop-select" onchange="toggleCreateButton()">
+            <option value="">Select a shop location...</option>
+            {% for option in shops %}
+                <option value="{{ option.shop_id }}">{{ option.address }}</option>
+            {% endfor %}
+        </select>
+    
+        <div class="order-summary">
+            <div class="summary-title">Order Summary</div>
+            <ul class="component-list">
+            </ul>
+        </div>
+    
+        <button class="create-btn" onclick="createOrder()" disabled>Create Order</button>
+    </div>
+    
+    <script>
+        const shops = {{ shops|tojson }};
+    </script>
+
+    <script src="/static/js/Order.js"> </script>
+    
+    </body></html>

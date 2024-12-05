@@ -1,0 +1,113 @@
+<html><head><base href=".">
+    <meta charset="UTF-8">
+    <title>NadoPC - Personal Account</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/PersonalAccount.css">
+    </head>
+    <body>
+    
+    <div class="header">
+        <div class="logo">
+            <svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20,25 L40,10 L60,25 L40,40 Z" fill="#3498DB"></path>
+                <path d="M35,25 L55,10 L75,25 L55,40 Z" fill="#2C3E50"></path>
+                <text x="85" y="35" fill="#2C3E50" font-size="24" font-weight="bold">NadoPC</text>
+            </svg>
+        </div>
+        <div class="user-info">
+            <button class="home-btn" onclick="window.location.href='http://localhost:8000/user/home'">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 10L10 3L17 10L17 17H13V12H7V17H3V10Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                Home
+            </button>
+        </div>
+    </div>
+    
+    <div class="orders-container">
+        <div class="orders-title">My Orders</div>
+        <div class="order-list">
+        {% for order in orders %}
+            <div class="order-item" onclick="toggleOrderDetails(this)">
+                <div class="order-header">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+                            <span class="order-number">Order {{ order.order_id }}</span>
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <span class="order-status status-{{ order.status }}">{{ order.status }}</span>
+                                <span class="order-time" style="position: relative; padding-left: 1rem;">
+                                    <span style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; background: #666; border-radius: 50%;"></span>
+                                    {{ order.creation_time }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--primary);">
+                        <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </div>
+                <div class="order-details">
+                    {% if order.status == 'completed' %}
+                    <div class="completion-time">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Completed on: {{order.completion_time}}
+                    </div>
+                    {% endif %}
+                    <div class="address-section">
+                        <div class="address-title">Shop Address</div>
+                        <div class="address-content">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10 1.66669L3.33334 5.00002V8.33335C3.33334 11.8334 6.05834 15.0667 10 15.8334C13.9417 15.0667 16.6667 11.8334 16.6667 8.33335V5.00002L10 1.66669Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <div>
+                                <p>NadoPC: {{ order.shop_address }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="details-divider"></div>
+                    <ul class="component-list">
+                        {% for product in order.products %}
+                        <li class="component-item">
+                            
+                            <span>
+                                {%if product == 'processor'%}
+                                CPU:
+                                {% elif product == 'videocard' %}
+                                GPU:
+                                {% elif product == 'motherboard' %}
+                                Motherboard:
+                                {% elif product == 'computer_case' %}
+                                Case:
+                                {% elif product == 'power_block' %}
+                                Power Supply:
+                                {% elif product == 'cooler' %}
+                                Cooling
+                                {% else %}
+                                {{product}}:
+                                {% endif %}
+                                    {{order.products[product].product_name}}
+                            </span>
+                            <span>${{order.products[product].product_price}}</span>
+                        </li>
+                        {% endfor %}
+                        <li class="component-item">
+                            <span style="font-weight: bold;">Total</span>
+                            <span style="font-weight: bold;">${{order.total_price}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+            
+        </div>
+    </div>
+    
+    <script>
+        const orders = {{ orders|tojson }};
+    </script>
+    
+    <script src="/static/js/PersonalAccount.js"> </script>
+    
+    </body></html>

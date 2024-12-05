@@ -1,0 +1,51 @@
+<html><head><base href="." /><meta charset="UTF-8" />
+    <title>NadoPC</title>
+    <link rel="stylesheet" type="text/css" href="static/css/register.css">
+    </head>
+    <body>
+    
+    <div class="register-container">
+        <div class="logo">
+            <svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20,25 L40,10 L60,25 L40,40 Z" fill="#3498DB"/>
+                <path d="M35,25 L55,10 L75,25 L55,40 Z" fill="#2C3E50"/>
+                <text x="85" y="35" fill="#2C3E50" font-size="24" font-weight="bold">NadoPC</text>
+            </svg>
+        </div>
+        
+        <form id="registerForm" onsubmit="handleRegister(event)">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autocomplete="username">
+                <div class="error-message" id="usernameError">Username must be at least 3 characters</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required autocomplete="email">
+                <div class="error-message" id="emailError">Please enter a valid email address</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required autocomplete="new-password">
+                <div class="error-message" id="passwordError">Password must be at least 6 characters</div>
+            </div>
+    
+            <div class="form-group">
+                <label for="birthdate">Birth Date</label>
+                <input type="date" id="birthdate" name="birthdate" required>
+                <div class="error-message" id="birthdateError">Please enter a valid birth date</div>
+            </div>
+            
+            <button type="submit" class="btn">Register</button>
+        </form>
+    
+        <div class="login-link">
+            Already have an account? <a href="http://localhost:8000/user/login">Log in</a>
+        </div>
+    </div>
+    
+    <script src="static/js/register.js"> </script>
+    
+    </body></html>

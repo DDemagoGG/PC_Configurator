@@ -1,0 +1,95 @@
+<html><head><base href=".">
+    <meta charset="UTF-8">
+    <title>NadoPC - Shop Account</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/ShopHomepage.css">
+    </head>
+    <body>
+    
+    <div class="header">
+        <div class="logo">
+            <svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20,25 L40,10 L60,25 L40,40 Z" fill="#3498DB"></path>
+                <path d="M35,25 L55,10 L75,25 L55,40 Z" fill="#2C3E50"></path>
+                <text x="85" y="35" fill="#2C3E50" font-size="24" font-weight="bold">NadoPC</text>
+            </svg>
+        </div>
+    </div>
+    
+    <div class="orders-container">
+        <div class="orders-title">Shop Orders</div>
+        <div class="order-list">
+            {% for order in orders %}
+                <div class="order-item" data-order-id="{{ order.order_id }}" onclick="toggleOrderDetails(this, event)">
+                    <div class="order-header">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            
+                            <div style="display: flex; flex-direction: column; gap: 0.3rem;">
+                                <span class="order-number">Order {{order.order_id}}</span>
+                                <div style="display: flex; gap: 1rem; align-items: center;">
+                                    <span class="order-status status-{{order.status}}">{{order.status}}</span>
+                                    <span class="order-time" style="position: relative; padding-left: 1rem;">
+                                        <span style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 4px; height: 4px; background: #666; border-radius: 50%;"></span>
+                                        2023-06-15 14:30
+                                    </span>
+                                </div>
+                            </div>
+                            <button class="status-btn" onclick="changeStatus(this)" data-status={{order.status}}>
+                                Next Status
+                            </button>
+                        </div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--primary);">
+                            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                    <div class="order-details">
+                        <div class="completion-time" style="display: none;">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            Completed on: {{order.completion_time}}
+                        </div>
+                        
+                        <ul class="component-list">
+                            {% for product in order.products %}
+                            <li class="component-item">
+                                
+                                <span>
+                                    {%if product == 'processor'%}
+                                    CPU:
+                                    {% elif product == 'videocard' %}
+                                    GPU:
+                                    {% elif product == 'motherboard' %}
+                                    Motherboard:
+                                    {% elif product == 'computer_case' %}
+                                    Case:
+                                    {% elif product == 'power_block' %}
+                                    Power Supply:
+                                    {% elif product == 'cooler' %}
+                                    Cooling
+                                    {% else %}
+                                    {{product}}:
+                                    {% endif %}
+                                      {{order.products[product].product_name}}
+                                </span>
+                                <span>${{order.products[product].product_price}}</span>
+                            </li>
+                            {% endfor %}
+                            <li class="component-item">
+                                <span style="font-weight: bold;">Total</span>
+                                <span style="font-weight: bold;">${{order.total_price}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <script>
+        const orders = {{ orders|tojson }};
+    </script>
+
+    <script src="/static/js/ShopHomepage.js"> </script>
+    
+    </body></html>

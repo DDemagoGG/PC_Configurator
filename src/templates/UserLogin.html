@@ -1,0 +1,43 @@
+<html><head><base href="." /><meta charset="UTF-8" />
+    <title>NadoPC</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/login.css">
+    </head>
+    <body>
+    
+    <div class="login-container">
+        <div class="logo">
+            <svg viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20,25 L40,10 L60,25 L40,40 Z" fill="#3498DB"/>
+                <path d="M35,25 L55,10 L75,25 L55,40 Z" fill="#2C3E50"/>
+                <text x="85" y="35" fill="#2C3E50" font-size="24" font-weight="bold">NadoPC</text>
+            </svg>
+        </div>
+        
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required autocomplete="username">
+                <div class="error-message" id="usernameError">Invalid username</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
+                <div class="error-message" id="passwordError">Invalid password</div>
+            </div>
+            
+            <button type="submit" class="btn">Log In</button>
+        </form>
+
+        <div class="register-link">
+            Don't have an account? <a href="http://localhost:8000/register">register</a>
+        </div>
+        <div class="shop-login-link">
+            Or you are a shop? <a href="http://localhost:8000/shop/login">Log in</a>
+        </div>
+    </div>
+    
+    <script src="/static/js/UserLogin.js"> </script>
+    
+    </body></html>
