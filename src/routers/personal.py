@@ -8,6 +8,8 @@ from starlette.templating import Jinja2Templates
 from services.auth import get_user_id_from_token, validate_access_token_for_user
 from services.personal import get_parameters
 
+from repository.redis import redis_client
+
 router = APIRouter()
 
 template = Jinja2Templates(directory="templates")
@@ -17,8 +19,12 @@ template = Jinja2Templates(directory="templates")
 async def show_login_page(request: Request):
     if validate_access_token_for_user(request):
         user_id = get_user_id_from_token(request)
-        parameters = await get_parameters(user_id)
-        parameters["request"] = request
-        return template.TemplateResponse("PersonalAccount.html", parameters)
+        token = request.cookies.get("access_token")
+        redis_token = redis_client.get(f"auth_user_token:{user_id}")
+        if redis_token == token:
+            user_id = get_user_id_from_token(request)
+            parameters = await get_parameters(user_id)
+            parameters["request"] = request
+            return template.TemplateResponse("PersonalAccount.html", parameters)
 
     return RedirectResponse(url="/user/login", status_code=status.HTTP_302_FOUND)

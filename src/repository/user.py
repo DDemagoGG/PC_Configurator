@@ -20,6 +20,19 @@ async def create_user(user: RegisterUserForm):
         )
         await connection.execute(query, *params)
 
+async def create_shop(shopname: str, password: str, addr: str):
+    async with admin_connector.get_connect() as connection:
+        query = """
+            INSERT INTO shops (shopname, password, address)
+            VALUES ($1, $2, $3)
+        """
+        params = (
+            shopname,
+            password,
+            addr
+        )
+        await connection.execute(query, *params)
+
 
 async def find_user_by_username(username: str) -> User:
     async with user_connector.get_connect() as connection:

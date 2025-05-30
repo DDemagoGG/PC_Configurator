@@ -6,9 +6,11 @@ from fastapi import *
 from jose import jwt
 
 from repository.shop import find_shop_by_id, find_shop_by_shopname
-from repository.user import create_user, find_user_by_id, find_user_by_username
+from repository.user import create_user, find_user_by_id, find_user_by_username, create_shop
 from schemas import Shop, User
 from schemas.user import LoginUserForm, RegisterUserForm
+
+from repository.redis import redis_client
 
 SECRET_KEY = "secretik"
 ALGORITHM = "HS256"
@@ -31,6 +33,14 @@ async def register_user(user: RegisterUserForm) -> bool:
         user.password = hash_pswd(user.password)
         await create_user(user)
         return True
+    
+async def register_shop(shopname: str, password: str, addr: str) -> bool:
+    if await find_shop_by_shopname(shopname):
+        return False
+    else:
+        hashed_password = hash_pswd(password)
+        await create_shop(shopname, hashed_password, addr)
+        return True
 
 
 async def authenticate_user(username: str, password: str) -> User:
@@ -38,6 +48,8 @@ async def authenticate_user(username: str, password: str) -> User:
     if not user:
         return None
     if not check_password(password, user.password):
+        return None
+    if redis_client.exists(f"auth_user_token:{user.user_id}") == 1:
         return None
     return user
 
@@ -47,6 +59,8 @@ async def authenticate_shop(shopname: str, password: str) -> Shop:
     if not shop:
         return None
     if not check_password(password, shop.password):
+        return None
+    if redis_client.exists(f"auth_shop_token:{shop.shop_id}") == 1:
         return None
     return shop
 
@@ -125,5 +139,5 @@ async def get_current_shop(request: Request) -> Shop:
         return None
     payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     shop_id = payload.get("id")
-    shop = await find_user_by_id(shop_id)
+    shop = await find_shop_by_id(shop_id)
     return shop

@@ -129,3 +129,17 @@ async def update_order_status(order_id: int):
             WHERE order_id = $1
         """
         await connection.execute(query, order_id)
+
+async def get_order(order_id: int):
+    async with shop_connector.get_connect() as connection:
+        query = """
+            SELECT *
+            FROM orders WHERE order_id = $1
+        """
+        params = order_id
+        rows = await connection.fetch(query, params)
+        return {
+            "order_id": rows[0]["order_id"],
+            "user_id": rows[0]["user_id"],
+            "status": rows[0]["status"]
+        }

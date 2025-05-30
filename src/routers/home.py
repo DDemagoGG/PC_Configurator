@@ -14,6 +14,7 @@ from services.auth import (
     get_current_user,
     register_user,
     validate_access_token_for_user,
+    get_user_id_from_token
 )
 from services.home import (
     get_all_components,
@@ -26,6 +27,9 @@ from services.home import (
     get_components_by_applied_videocard,
 )
 
+from repository.redis import redis_client
+
+
 router = APIRouter(tags=["Homepage"])
 
 template = Jinja2Templates(directory="templates")
@@ -34,13 +38,33 @@ template = Jinja2Templates(directory="templates")
 @router.get("/user/home", response_class=responses.HTMLResponse)
 async def show_home_page(request: Request):
     if validate_access_token_for_user(request):
-        params = {"request": request}
-        params["group_parameters"] = await get_all_group_parameters()
-        params["components"] = await get_all_components()
-        params["names"] = await get_all_names()
-        return template.TemplateResponse("UserHomepage.html", params)
+        user_id = get_user_id_from_token(request)
+        token = request.cookies.get("access_token")
+        redis_token = redis_client.get(f"auth_user_token:{user_id}")
+        if redis_token == token:
+            params = {"request": request}
+            if redis_client.exists("group_parameters") == 1:
+                params["group_parameters"] = json.loads(redis_client.get("group_parameters"))
+            else:
+                params["group_parameters"] = await get_all_group_parameters()
+                redis_client.set("group_parameters", json.dumps(params["group_parameters"]))
+            if redis_client.exists("components") == 1:
+                params["components"] = json.loads(redis_client.get("components"))
+            else:
+                params["components"] = await get_all_components()
+                redis_client.set("components", json.dumps(params["components"]))
+            if redis_client.exists("names") == 1:
+                params["names"] = json.loads(redis_client.get("names"))
+            else:
+                params["names"] = await get_all_names()
+                redis_client.set("names", json.dumps(params["names"]))
+            if redis_client.exists(f"user_order_draft:{user_id}") == 1:
+                params["draft_order"] = json.loads(redis_client.get(f"user_order_draft:{user_id}"))
+                print(json.loads(redis_client.get(f"user_order_draft:{user_id}")))
+            else:
+                params["draft_order"] = None
+            return template.TemplateResponse("UserHomepage.html", params)
     return RedirectResponse(url="/user/login", status_code=status.HTTP_302_FOUND)
-
 
 @router.get("/api/processor")
 async def apply_processor(id: str):

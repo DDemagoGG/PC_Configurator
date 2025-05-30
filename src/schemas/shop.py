@@ -13,3 +13,8 @@ class Shop(BaseModel):
     password: str
     shop_id: int
     address: str
+
+class RegisterShopForm(BaseModel):
+    shopname: str
+    password: str
+    addr: str

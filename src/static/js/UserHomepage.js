@@ -248,17 +248,36 @@ function checkCompatibility(componentName, componentId){
 }
 
 function setOrder(){
-    sessionStorage.setItem('order', JSON.stringify(order))
+    save_order_sync();
+    sessionStorage.setItem('order', JSON.stringify(order));
     const costs = Object.keys(order).reduce((prices, componentName) => {
         prices[componentName] = components[componentName].find(item => item[`${componentName}_id`] === order[componentName]).price;
         return prices;
     }, {});
-    sessionStorage.setItem('costs', JSON.stringify(costs))
+    sessionStorage.setItem('costs', JSON.stringify(costs));
     const orderNames = Object.keys(order).reduce((orderNames, componentName) => {
         orderNames[componentName] = names[componentName].find(item => item[componentName + '_id'] == order[componentName]).name;
         return orderNames;
     }, {});
-    sessionStorage.setItem('names', JSON.stringify(orderNames))
+    sessionStorage.setItem('names', JSON.stringify(orderNames));
+}
+
+function save_order_sync() {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://localhost:8000/user/saveorder", false); // false — синхронный режим
+    xhr.setRequestHeader("Content-Type", "application/json");
+    try {
+        xhr.send(JSON.stringify(order));
+        if (xhr.status >= 200 && xhr.status < 300) {
+            console.log("Заказ сохранён:", response);
+        } else {
+            console.error("Ошибка при сохранении заказа:", xhr.statusText);
+            return null;
+        }
+    } catch (err) {
+        console.error("Ошибка при отправке запроса:", err);
+        return null;
+    }
 }
 
 function orderIsFull(){
@@ -274,4 +293,38 @@ function toogleCreateButton(){
         createBtn.classList.remove('active');
         createBtn.disabled = true;
     }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    restoreOrderFromServer();
+});
+
+function restoreOrderFromServer() {
+    for (const componentName in draft_order) {
+        if (draft_order[componentName] !== null) {
+            order[componentName] = draft_order[componentName];
+
+            const selectedComponent = components[componentName].find(item => item[componentName + '_id'] == draft_order[componentName]);
+
+            if (selectedComponent) {
+                const groupValue = selectedComponent[group_param_names[componentName]];
+                
+                const selectEl = document.getElementById(componentName);
+                selectEl.value = groupValue;
+
+                showOptions(componentName, false);
+
+                const radio = document.querySelector(`input[name="${componentName}"][value="${selectedComponent.price}"]`);
+                if (radio) {
+                    radio.checked = true;
+                }
+
+                updateCompatibility(componentName, order[componentName]);
+                updateOrder(componentName, order[componentName]);
+            }
+        }
+    }
+
+    updateTotal();
+    toogleCreateButton();
 }

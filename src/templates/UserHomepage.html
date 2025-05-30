@@ -12,7 +12,7 @@
                 <text x="85" y="35" fill="#2C3E50" font-size="24" font-weight="bold">NadoPC</text>
             </svg>
         </div>
-        <button class="account-btn" onclick="window.location.href='http://localhost:8000/user/account'">
+        <button class="account-btn" onclick="save_order_sync(); window.location.href='http://localhost:8000/user/account'">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="10" cy="6" r="4" stroke="white" stroke-width="2"/>
                 <path d="M3 18C3 14.6863 6.13401 12 10 12C13.866 12 17 14.6863 17 18" stroke="white" stroke-width="2"/>
@@ -123,6 +123,7 @@
         const components = {{ components|tojson }};
         const group_parameters = {{ group_parameters|tojson }};
         const names = {{ names|tojson }}
+        const draft_order = {{draft_order|tojson}}
     </script>
     
     <script src="/static/js/UserHomepage.js"> </script>
